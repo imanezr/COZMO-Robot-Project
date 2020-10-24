@@ -1,0 +1,128 @@
+%start S
+
+#Rules
+S -> VP_HALF
+#murder weapon time
+S[SEM=<app(?npw, ?vpwr)>] ->  NP_WEAPON[SEM=?npw] VP_WEAPON_ROOM[SEM=?vpwr]
+S[SEM=<app(?mwt, ?iw)>] -> NP_WT[SEM=?mwt] VP_WT[SEM=?iw]
+S[SEM=<app(?vp, ?suj)>] -> NP[SEM=?suj] VP[SEM=?vp]
+VP[SEM=<app(?pp, ?vp)>] -> VP[SEM=?vp] PP[SEM=?pp]
+VP[SEM=<app(?v, ?np)>] -> V[SEM=?v] NP[SEM=?np]
+
+PP[SEM=<app(?p, ?np)>] -> P[SEM=?p] NP[SEM=?np]
+
+# Time Interval
+INTERVAL_HALF[SEM=<app(?interval, ?n)>] -> INTERVAL[SEM=?interval] N[SEM=?n, type=time]
+PP[SEM=<app(?interval, ?n)>] -> INTERVAL_HALF[SEM=?interval] P[SEM=?p] N[SEM=?n, type=time]
+
+PP[SEM=<app(?time,?n)>] -> TIME[SEM=?time] N[SEM=?n, type=time]
+
+# Killed by
+VP[SEM=<app(?cause,?adj)>] -> CAUSE_OF[SEM=?cause] ADJ[SEM=?adj]
+
+#Access
+VP[SEM=<app(?access,?np)>] -> ACCESS[SEM=?access] NP[SEM=?np]
+
+#Victim location
+NP[SEM=<app(?vl,?np)>] -> Nprop VICTIM_LOCATION[SEM=?vl]
+VP[SEM=<app(?vl,?np)>] -> VICTIM_LOCATION[SEM=?vl] NP[SEM=?np]
+
+#Murder weapon
+NP[SEM=<app(?mw,?np)>] -> NP[SEM=?np, type=weapon] MURDER_WEAPON[SEM=?mw]
+VP[SEM=<app(?mw,?np)>] -> MURDER_WEAPON[SEM=?mw] NP[SEM=?np, type=location]
+
+# Murder weapon time
+NP_WT[SEM=<app(?mwt,?np)>] -> NP[SEM=?np, type=weapon] MURDER_WEAPON_TIME[SEM=?mwt]
+INTERVAL_WEAPON_HALF[SEM=<app(?iw, ?n)>] -> INTERVAL_WEAPON[SEM=?iw] N[SEM=?n]
+VP_WT[SEM=<app(?iw, ?n)>] -> INTERVAL_WEAPON_HALF[SEM=?iw] P[SEM=?p] N[SEM=?n]
+
+# Murder weapon time
+#INTERVAL_MURDER_HALF[SEM=<app(?im, ?n)>] -> INTERVAL_MURDER[SEM=?im] N[SEM=?n]
+#PP[SEM=<app(?im, ?n)>] -> INTERVAL_MURDER_HALF[SEM=?im] P[SEM=?p] N[SEM=?n]
+
+# Death time
+VP_HALF[SEM=<app(?mtv,?n)>] -> MTV[SEM=?mtv] N[SEM=?n]
+VP[SEM=<app(?mtv,?n)>] -> VP_HALF[SEM=?mtv] P[SEM=?p] N[SEM=?n]
+
+NP[SEM=?np] -> Det N[SEM=?np]
+NP[SEM=?np] -> Nprop[SEM=?np]
+
+#Characters
+Nprop[SEM=<MrsWhite>] -> 'Mrs' 'White'
+Nprop[SEM=<MrGreen>] -> 'Mr' 'Green'
+Nprop[SEM=<MissScarlet>] -> 'Miss' 'Scarlet'
+Nprop[SEM=<MrsPeacock>] -> 'Mrs' 'Peacock'
+Nprop[SEM=<ColonelMustard>] -> 'Colonel' 'Mustard'
+Nprop[SEM=<MrBlack>] -> 'Mr' 'Black'
+
+#death verb
+VP[SEM=<\x.(Victim(x))>] -> 'died'
+
+MTV[SEM=<\x.\y.\z.(Victim(z) and MurderTime(x,y))>] -> 'died_between'
+
+#murder verb
+V[SEM=<\y.\x.Murder(x,y)>] -> 'killed'
+
+#Instrument
+P[SEM=<\x.\P.\y.(Weapon(x) and P(y))>] ->'with'
+MURDER_WEAPON[SEM=<\x.\y.(Weapon(y) and WeaponRoom(x))>] -> 'was_found_in'
+MURDER_WEAPON_TIME[SEM=<\x.\P.(Weapon(x) and P)>] -> 'was_discovered'
+
+#location
+ACCESS[SEM=<\x.\y.(access(x,y))>] -> 'was_in'
+
+VICTIM_LOCATION[SEM=<\x.\y.(Victim(y) and MurderRoom(x))>] -> 'died_in'
+
+#Trial
+WEAPON_ROOM[SEM=<\x.WeaponRoom(x)>] -> 'was_found_in'
+
+#time interval
+INTERVAL[SEM=<\x.\y.\P.\z.(Interval(x,y) and P(z))>] -> 'between'
+
+INTERVAL_WEAPON[SEM=<\x.\y.(WeaponTime(x,y) )>] -> 'between'
+
+#INTERVAL_MURDER[SEM=<\x.\y.\P.\z.(MurderTime(x,y) and P(z))>] -> 'between'
+
+#time
+TIME[SEM=<\x.\P.\y.(time(x) and P(y))>] -> 'at'
+
+#murder verb
+CAUSE_OF[SEM=<\x.(cause(x))>] -> 'was'
+
+
+#murder weapon
+N[SEM=<rope>, type=weapon] -> 'rope' | 'Rope'
+N[SEM=<revolver>, type= weapon] -> 'revolver' | 'Revolver'
+N[SEM=<knife>, type=weapon] -> 'knife' | 'Knife'
+N[SEM=<book>, type=weapon] -> 'book' | 'Book'
+
+#murder adjective
+ADJ[SEM=<strangled>] -> 'strangled' | 'Strangled'
+ADJ[SEM=<shot>] -> 'shot' | 'Shot'
+ADJ[SEM=<poisoned>] -> 'poisoned' | 'Poisoned'
+ADJ[SEM=<stabbed>] -> 'stabbed' | 'Stabbed'
+ADJ[SEM=<hit>] -> 'hit' | 'Hit'
+
+#Places
+N[SEM=<library>, type=location] -> 'library' | 'Library'
+N[SEM=<cellar>, type=location] -> 'cellar' | 'Cellar'
+N[SEM=<study>, type=location] -> 'study' | 'Study'
+N[SEM=<kitchen>, type=location] -> 'kitchen' | 'Kitchen'
+
+#Time
+N[SEM=<one>,type=time ] -> '1'| 'one'
+N[SEM=<two>,type=time] -> '2' | 'two'
+N[SEM=<three>,type=time] -> '3' | 'three'
+N[SEM=<four>,type=time] -> '4' | 'four'
+N[SEM=<five>,type=time] -> '5' | 'five'
+N[SEM=<six>,type=time] -> '6' | 'six'
+N[SEM=<seven>,type=time] -> '7' | 'seven'
+N[SEM=<eight>,type=time] -> '8' | 'eight'
+N[SEM=<nine>,type=time] -> '9' | 'nine'
+N[SEM=<ten>,type=time] -> '10' | 'ten'
+N[SEM=<eleven>, type=time] -> '11' | 'eleven'
+N[SEM=<twelve>,type=time] -> '12' | 'twelve '
+
+Det -> 'a' | 'the' | 'A'
+
+P   ->  'and'  | 'in'
